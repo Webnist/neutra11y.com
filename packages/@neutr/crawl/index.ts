@@ -11,6 +11,9 @@ const puppeteer = require('puppeteer');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cheerio = require('cheerio');
 
+// output/sitemap.ts からSitemapEntry型とwriteSitemapJsonをインポート
+import { SitemapEntry, writeSitemapJson } from './output/sitemap';
+
 export interface CrawlOptions {
     url: string;
     depth?: number;
@@ -46,25 +49,50 @@ function extractLinks($: any, baseUrl: string): string[] {
     return links;
 }
 
-export async function crawl({ url, depth = 1, filter, allowlist = [], visited = new Set(), currentDepth = 0 }: CrawlOptions) {
-    if (currentDepth > depth || visited.has(url)) return [];
-    visited.add(url);
+// URL正規化（末尾スラッシュ除去、ただしルートは除外）
+function normalizeUrl(url: string): string {
+    try {
+        const u = new URL(url);
+        if (u.pathname !== '/' && u.pathname.endsWith('/')) {
+            u.pathname = u.pathname.replace(/\/$/, '');
+        }
+        return u.toString();
+    } catch {
+        return url;
+    }
+}
+
+export async function crawl({ url, depth = 1, filter, allowlist = [], visited = new Set(), currentDepth = 0, parent }: CrawlOptions & { parent?: string }) {
+    const normUrl = normalizeUrl(url);
+    if (currentDepth > depth || visited.has(normUrl)) return [];
+    visited.add(normUrl);
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    await page.goto(normUrl, { waitUntil: 'networkidle2' });
     const html = await page.content();
     const $ = cheerio.load(html);
-    const links = extractLinks($, url).filter(link => isSameDomain(url, link));
-    // allowlist/filter対応は今後拡張
-    let results = [{ url }];
+    const links = extractLinks($, normUrl).map(normalizeUrl).filter(link => isSameDomain(normUrl, link));
+    // TODO: status, title, redirectedTo取得も拡張
+    const entry: SitemapEntry = {
+        url: normUrl,
+        status: 200, // 仮
+        title: $('title').text() || undefined,
+        depth: currentDepth,
+        parent,
+    };
+    let results: SitemapEntry[] = [entry];
     if (currentDepth < depth) {
         for (const link of links) {
             if (!visited.has(link)) {
-                const childResults = await crawl({ url: link, depth, filter, allowlist, visited, currentDepth: currentDepth + 1 });
+                const childResults = await crawl({ url: link, depth, filter, allowlist, visited, currentDepth: currentDepth + 1, parent: normUrl });
                 results = results.concat(childResults);
             }
         }
     }
     await browser.close();
+    // ルート呼び出し時のみ出力
+    if (currentDepth === 0) {
+        await writeSitemapJson(results);
+    }
     return results;
 }
