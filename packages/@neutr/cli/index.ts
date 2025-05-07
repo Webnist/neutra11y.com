@@ -17,7 +17,7 @@ program
     .option('--depth <depth>', 'クロール深さ', '1')
     .action(async (opts) => {
         const url = opts.url;
-        const depth = parseInt(opts.depth, 10) || 1;
+        const depth = isNaN(parseInt(opts.depth, 10)) ? 1 : parseInt(opts.depth, 10);
         console.log(`🕸️ クロール開始: ${url} (depth=${depth})`);
         await crawl({ url, depth });
         console.log('✅ sitemap.json 出力完了');
