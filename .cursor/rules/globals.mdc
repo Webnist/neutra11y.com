@@ -1,0 +1,90 @@
+rule "NeutrPlatform開発ルール: 技術スタック優先" {
+  when {
+    file.ext in ["ts", "tsx", "js", "jsx"]
+  }
+  then {
+    preferLibrary("Next.js")
+    preferLibrary("TailwindCSS")
+    preferLibrary("shadcn/ui")
+    preferLibrary("React 18")
+    preferLibrary("Zustand")
+    preferLibrary("SWR")
+    preferLibrary("Chart.js")
+  }
+}
+
+rule "NeutrPlatform開発ルール: バックエンド優先" {
+  when {
+    file.ext == "ts"
+    and file.path matches "api|server|handlers|routes"
+  }
+  then {
+    preferLibrary("Node.js")
+    preferLibrary("Express")
+    preferLibrary("Sequelize")
+    preferLibrary("MySQL")
+  }
+}
+
+rule "NeutrPlatform開発ルール: クローラーとルールエンジン" {
+  when {
+    file.path matches "crawler|engine|rules|core"
+  }
+  then {
+    preferLibrary("puppeteer")
+    preferLibrary("jsdom")
+    preferLibrary("axe-core")
+    preferLibrary("cheerio")
+  }
+}
+
+rule "NeutrPlatform開発ルール: 型安全重視" {
+  when {
+    file.ext == "ts"
+  }
+  then {
+    enforce("useTypeScript")
+    enforce("defineTypesIn @neutr/types")
+  }
+}
+
+rule "NeutrPlatform開発ルール: CLIコマンド設計" {
+  when {
+    file.path matches "@neutr/cli"
+  }
+  then {
+    suggest("コマンド設計は `pnpm exec neutr [command]` を基準に")
+    preferLibrary("commander.js")
+  }
+}
+
+rule "NeutrPlatform開発ルール: 外部API連携" {
+  when {
+    file.path matches "integrations|webhooks"
+  }
+  then {
+    enforce("APIトークンは.env.localに保持")
+    suggest("Clerk, Stripe, Notion, Slack, GitHub, MCPは個別クライアントに分離")
+  }
+}
+
+rule "NeutrPlatform開発ルール: セキュリティと認証" {
+  when {
+    file.path matches "auth|middleware"
+  }
+  then {
+    preferLibrary("Clerk")
+    enforce("JWTでセッション管理")
+    suggest("Roleベースのガードはmiddleware.tsで制御")
+  }
+}
+
+rule "NeutrPlatform開発ルール: CI/CD & PR通知" {
+  when {
+    file.path matches ".github/workflows|scripts"
+  }
+  then {
+    enforce("pnpm exec neutrコマンドで診断/通知")
+    suggest("Slack通知・GitHub PR Botコメントも含める")
+  }
+}

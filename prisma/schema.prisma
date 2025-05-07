@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model CheckResult {
+  id        Int      @id @default(autoincrement())
+  url       String
+  status    String
+  ruleSet   String
+  createdAt DateTime @default(now())
+}
+
+model Violation {
+  id        Int      @id @default(autoincrement())
+  checkId   Int
+  ruleId    String
+  severity  String
+  message   String
+  selector  String
+  CheckResult CheckResult @relation(fields: [checkId], references: [id])
+}

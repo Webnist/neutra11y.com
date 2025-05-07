@@ -1,0 +1,37 @@
+rule "NeutrPlatform: タスクの実行と品質確認" {
+  when {
+    task.inProgress == true
+  }
+  then {
+    executeStepsOneByOne()
+    reportEachProgress()
+    followCodeStructureAndNaming()
+    verifyImplementationResult()
+    handleErrors()
+  }
+}
+
+function executeStepsOneByOne() {
+  enforce("洗い出した手順に沿って1ステップずつ実行してください")
+}
+
+function reportEachProgress() {
+  suggest("各ステップごとに進捗を簡潔に記録してください")
+}
+
+function followCodeStructureAndNaming() {
+  enforce("プロジェクトのディレクトリ構成・命名規則を守ってください")
+  enforce("共通処理は `/core/` または `/utils/` に配置")
+}
+
+function verifyImplementationResult() {
+  suggest("成果物が要件を満たしているか即時確認してください")
+}
+
+function handleErrors() {
+  suggest("以下の手順で問題に対応してください：
+  a. 原因の特定（ログ、スタックトレース確認）
+  b. 解決策を考えて実行
+  c. 修正後の挙動を再検証
+  d. 検証結果と対応内容を記録")
+}

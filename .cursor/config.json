@@ -1,0 +1,11 @@
+{
+  "customInstructions": {
+    "language": "日本語",
+    "responseFormat": "Japanese"
+  },
+  "developerProfile": {
+    "name": "Webnist",
+    "role": "Full Stack Developer",
+    "preferredLanguages": ["TypeScript", "React", "Next.js", "Node.js"]
+  }
+}

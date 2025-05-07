@@ -1,0 +1,20 @@
+rule "NeutrPlatform: 最終レビュー前のPull Request送信ルール" {
+  when {
+    task.completed == true
+  }
+  then {
+    ensurePullRequestIsCreated()
+    linkGyarruReportToPR()
+  }
+}
+
+function ensurePullRequestIsCreated() {
+  enforce("実装が完了したら GitHub に PR を作成してください")
+  suggest("PRタイトルには [feat], [fix], [refactor], [docs] などを含めましょう")
+  suggest("Draft PRでもOK。ギャルルがレビューできる状態にしてください")
+}
+
+function linkGyarruReportToPR() {
+  suggest("ギャルル用の報告テンプレをPR本文に貼り付けてください（テンプレ参照）")
+  suggest("レポートURL（PDF/HTML）やNotionリンクも追記するとGoodです")
+}

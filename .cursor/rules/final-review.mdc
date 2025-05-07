@@ -1,0 +1,43 @@
+rule "NeutrPlatform: 最終レビュー＆結果報告ルール" {
+  when {
+    task.completed == true
+  }
+  then {
+    performFinalReview()
+    reportTaskResult()
+    useGyarruReportTemplate()
+  }
+}
+
+function performFinalReview() {
+  suggest("指示内容と最終成果物の整合性を確認してください")
+  suggest("重複実装や誤実装がないかを再チェックしてください")
+}
+
+function reportTaskResult() {
+  suggest("以下のフォーマットで結果を記録・報告してください：
+  # 実行結果報告
+
+  ## 概要
+  [全体の要約を簡潔に記述]
+
+  ## 実行ステップ
+  1. [ステップ1の説明と結果]
+  2. [ステップ2の説明と結果]
+  ...
+
+  ## 成果物
+  [成果物の詳細や、該当する場合はリンクなど]
+
+  ## 課題対応（該当する場合）
+  - 発生した問題と対応内容
+  - 今後の注意点
+
+  ## 注意点・改善提案
+  - [気づいた点や改善提案があれば記述]")
+}
+
+function useGyarruReportTemplate() {
+  enforce("ギャルル専用Markdownテンプレで報告してください")
+  suggest("NotionやSlackで共有する場合もこのテンプレートを基準に整形するとベターです")
+}

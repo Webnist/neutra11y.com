@@ -1,0 +1,47 @@
+rule "NeutrPlatform: タスク分析と計画ルール" {
+  when {
+    task.received == true
+  }
+  then {
+    analyzeTask()
+    checkFileDependencies()
+    identifyRequirementsAndConstraints()
+    listPotentialIssues()
+    enumerateExecutionSteps()
+    determineOptimalStepOrder()
+    checkForDuplicateImplementations()
+  }
+}
+
+function analyzeTask() {
+  suggest("タスクの目的と範囲を簡潔に要約してください")
+  suggest("守るべきファイル/ディレクトリを確認してください")
+}
+
+function checkFileDependencies() {
+  enforce("対象コードに関する既存のコード、API、型定義をチェック")
+}
+
+function identifyRequirementsAndConstraints() {
+  suggest("主要な要件・制約条件を特定し、ステップに反映してください")
+}
+
+function listPotentialIssues() {
+  suggest("失敗しそうな点・技術的課題を洗い出し、リスクとして記録してください")
+}
+
+function enumerateExecutionSteps() {
+  suggest("実装に必要なステップを詳細に洗い出し、記録してください")
+}
+
+function determineOptimalStepOrder() {
+  suggest("洗い出したステップを実行順に整理し、上から順に実施してください")
+}
+
+function checkForDuplicateImplementations() {
+  suggest("以下の観点で重複実装を防いでください：
+  - 既存の類似機能の有無
+  - 同名/類似名の関数やコンポーネント
+  - 重複APIエンドポイント
+  - 共通処理の共通化可能性")
+}
