@@ -79,6 +79,7 @@ export async function crawl({ url, depth = 1, filter, allowlist = [], visited = 
         title: $('title').text() || undefined,
         depth: currentDepth,
         parent,
+        issues: [],
     };
     let results: SitemapEntry[] = [entry];
     if (currentDepth < depth) {

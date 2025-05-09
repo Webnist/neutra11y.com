@@ -1,3 +1,11 @@
+export type IssueResult = {
+    ruleId: string;
+    category: 'a11y' | 'seo' | 'design' | 'performance';
+    severity: 'info' | 'warning' | 'error';
+    message: string;
+    node?: string;
+};
+
 export type SitemapEntry = {
     url: string;
     status: number;
@@ -5,6 +13,7 @@ export type SitemapEntry = {
     depth: number;
     parent?: string;
     redirectedTo?: string;
+    issues?: IssueResult[];
 };
 
 // @ts-expect-error Node.js型対応
